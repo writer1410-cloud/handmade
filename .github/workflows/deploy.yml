@@ -1,0 +1,50 @@
+name: Deploy to GitHub Pages
+
+# このブランチに push されると、ビルドして GitHub Pages へ公開する。
+# プロジェクトサイト（https://<user>.github.io/handmade/）配信のため
+# DEPLOY_BASE=/handmade/ を渡してビルドする。
+on:
+  push:
+    branches:
+      - claude/handmade-cost-calculator-3r0ogm
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時に1つだけデプロイ（実行中のものは中断しない）
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Build
+        env:
+          DEPLOY_BASE: /handmade/
+        run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
