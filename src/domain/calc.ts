@@ -207,21 +207,3 @@ export function recommendedPrice(
   // 10円単位で切り上げ（販売しやすい価格に丸める）
   return Math.ceil(price / 10) * 10;
 }
-
-/** 複数の販売方法での手取り比較行 */
-export interface SalesMethodComparisonRow {
-  method: SalesMethod;
-  result: ProfitResult;
-}
-
-export function compareSalesMethods(
-  price: number,
-  work: Work,
-  costs: Map<string, number>,
-  methods: SalesMethod[],
-): SalesMethodComparisonRow[] {
-  return methods.map((method) => ({
-    method,
-    result: profitAt(price, work, costs, method),
-  }));
-}

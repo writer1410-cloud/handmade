@@ -18,8 +18,7 @@ Google Play に App Bundle（AAB）として掲載することを想定してい
 | 作品管理 | 使用材料・制作時間・梱包費・その他経費 | 無料（3作品まで） |
 | 価格シミュレーション | 価格を動かして利益・利益率・実質時給をリアルタイム表示 | 無料 |
 | 価格逆算 | 赤字にならない最低価格／目標時給を確保できる価格 | Pro |
-| 販売方法比較 | オンライン・対面・委託・オーダーの手取り比較 | Pro |
-| テンプレート複製 | よく使う作品構成を複製 | Pro |
+| テンプレート | よく使う作品構成を保存し、新規作品の雛形にする | Pro |
 | バックアップ | 端末内データのJSON書き出し・復元 | 無料 |
 | CSV出力 | 作品・材料の一覧をCSV出力 | Pro |
 | 広告なし | 無料版のホーム広告枠を非表示 | Pro |
@@ -70,7 +69,7 @@ src/
     defaults.ts   既定値・無料版の制限・販売方法テンプレート
     storage.ts    localStorage 保存／バックアップ
     csv.ts        CSV出力（Pro）
-  screens/        画面（Home / Materials / WorkEdit / PriceSimulation / SalesComparison / Settings）
+  screens/        画面（Home / Materials / WorkEdit / PriceSimulation / Templates / Settings）
   components/     共通UI
   lib/            表示フォーマット
   store.tsx       アプリ状態（Context）

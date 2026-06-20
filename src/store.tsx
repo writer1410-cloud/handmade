@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { AppData, Material, SalesMethod, Settings, Work } from "./domain/types";
+import type { AppData, Material, SalesMethod, Settings, Work, WorkTemplate } from "./domain/types";
 import { loadData, saveData } from "./domain/storage";
 import { FREE_LIMITS } from "./domain/defaults";
 
@@ -18,6 +18,10 @@ interface StoreApi {
   updateWork: (id: string, patch: Partial<Work>) => void;
   deleteWork: (id: string) => void;
   duplicateWork: (id: string) => Work | null;
+  // テンプレート
+  saveTemplate: (t: Omit<WorkTemplate, "id" | "createdAt" | "updatedAt">) => WorkTemplate | null;
+  deleteTemplate: (id: string) => void;
+  createWorkFromTemplate: (id: string) => Work | null;
   // 販売方法
   upsertSalesMethod: (m: SalesMethod) => void;
   deleteSalesMethod: (id: string) => void;
@@ -118,6 +122,46 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return created;
   }, []);
 
+  const saveTemplate = useCallback<StoreApi["saveTemplate"]>((t) => {
+    let created: WorkTemplate | null = null;
+    setData((d) => {
+      if (!d.settings.isPro) return d; // テンプレートはProの機能
+      const now = Date.now();
+      created = { ...t, id: uid(), createdAt: now, updatedAt: now };
+      return { ...d, templates: [...d.templates, created] };
+    });
+    return created;
+  }, []);
+
+  const deleteTemplate = useCallback<StoreApi["deleteTemplate"]>((id) => {
+    setData((d) => ({ ...d, templates: d.templates.filter((t) => t.id !== id) }));
+  }, []);
+
+  const createWorkFromTemplate = useCallback<StoreApi["createWorkFromTemplate"]>((id) => {
+    let created: Work | null = null;
+    setData((d) => {
+      if (!d.settings.isPro && d.works.length >= FREE_LIMITS.works) return d;
+      const tpl = d.templates.find((t) => t.id === id);
+      if (!tpl) return d;
+      const now = Date.now();
+      created = {
+        id: uid(),
+        name: tpl.name,
+        materials: tpl.materials.map((m) => ({ ...m })),
+        productionMinutes: tpl.productionMinutes,
+        packagingCost: tpl.packagingCost,
+        shippingCost: tpl.shippingCost,
+        otherCost: tpl.otherCost,
+        price: tpl.price,
+        salesMethodId: tpl.salesMethodId,
+        createdAt: now,
+        updatedAt: now,
+      };
+      return { ...d, works: [...d.works, created] };
+    });
+    return created;
+  }, []);
+
   const upsertSalesMethod = useCallback<StoreApi["upsertSalesMethod"]>((m) => {
     setData((d) => {
       const exists = d.salesMethods.some((x) => x.id === m.id);
@@ -154,6 +198,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updateWork,
       deleteWork,
       duplicateWork,
+      saveTemplate,
+      deleteTemplate,
+      createWorkFromTemplate,
       upsertSalesMethod,
       deleteSalesMethod,
       updateSettings,
@@ -170,6 +217,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updateWork,
       deleteWork,
       duplicateWork,
+      saveTemplate,
+      deleteTemplate,
+      createWorkFromTemplate,
       upsertSalesMethod,
       deleteSalesMethod,
       updateSettings,

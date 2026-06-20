@@ -52,6 +52,24 @@ export interface Work {
   updatedAt: number;
 }
 
+/**
+ * 作品テンプレート：よく使う作品の構成（材料・制作時間・経費・販売方法など）を
+ * 保存しておき、新規作品の雛形として使う。テンプレート自体は作品数にカウントしない。
+ */
+export interface WorkTemplate {
+  id: string;
+  name: string;
+  materials: WorkMaterial[];
+  productionMinutes: number;
+  packagingCost: number;
+  shippingCost: number;
+  otherCost: number;
+  price: number;
+  salesMethodId: string | null;
+  createdAt: number;
+  updatedAt: number;
+}
+
 /** 販売方法（オンライン／対面／委託／オーダー）。手数料は固定せずユーザー編集可能。 */
 export interface SalesMethod {
   id: string;
@@ -82,6 +100,7 @@ export interface AppData {
   version: number;
   materials: Material[];
   works: Work[];
+  templates: WorkTemplate[];
   salesMethods: SalesMethod[];
   settings: Settings;
 }

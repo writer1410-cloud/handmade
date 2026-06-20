@@ -1,4 +1,4 @@
-import type { AppData, SalesMethod } from "./types";
+import type { AppData, SalesMethod, WorkTemplate } from "./types";
 import { DATA_VERSION, emptyData } from "./defaults";
 
 // 端末内（localStorage）にのみ保存する。クラウド送信は一切しない。
@@ -31,8 +31,19 @@ function migrate(parsed: Partial<AppData>): AppData {
     version: DATA_VERSION,
     materials: parsed.materials ?? base.materials,
     works: (parsed.works ?? base.works).map(normalizeWork),
+    templates: (parsed.templates ?? base.templates).map(normalizeTemplate),
     salesMethods: mergeSalesMethods(parsed.salesMethods, base.salesMethods),
     settings: { ...base.settings, ...parsed.settings },
+  };
+}
+
+/** 旧データのテンプレートに不足フィールドを補完する。 */
+function normalizeTemplate(t: WorkTemplate): WorkTemplate {
+  return {
+    ...t,
+    materials: Array.isArray(t.materials) ? t.materials : [],
+    shippingCost: typeof t.shippingCost === "number" ? t.shippingCost : 0,
+    salesMethodId: t.salesMethodId ?? null,
   };
 }
 

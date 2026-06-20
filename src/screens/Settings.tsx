@@ -72,7 +72,7 @@ export default function Settings() {
           <div className="pro-banner">
             <h3>✨ Pro 利用中</h3>
             <p style={{ margin: 0, fontSize: 14 }}>
-              作品・材料が無制限。価格逆算、販売方法の比較、テンプレート、CSV出力が使え、広告は表示されません。
+              作品・材料が無制限。価格逆算、テンプレート、CSV出力が使え、広告は表示されません。
             </p>
             <button
               className="btn ghost"
@@ -89,7 +89,7 @@ export default function Settings() {
             <h3>Proにアップグレード（買い切り）</h3>
             <p style={{ margin: "0 0 12px", fontSize: 14 }}>
               <strong>一度の購入でずっとPro。</strong>
-              作品・材料が無制限に。価格逆算・販売方法の比較・テンプレート複製・CSV出力・<strong>広告なし</strong>。
+              作品・材料が無制限に。価格逆算・テンプレート・CSV出力・<strong>広告なし</strong>。
             </p>
             <button className="btn" onClick={() => buy()}>
               {PRO_PRICE_LABEL}でProにアップグレード

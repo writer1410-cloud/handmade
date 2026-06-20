@@ -3,7 +3,7 @@ import Home from "./screens/Home";
 import Materials from "./screens/Materials";
 import WorkEdit from "./screens/WorkEdit";
 import PriceSimulation from "./screens/PriceSimulation";
-import SalesComparison from "./screens/SalesComparison";
+import Templates from "./screens/Templates";
 import Settings from "./screens/Settings";
 
 function BottomNav() {
@@ -16,8 +16,8 @@ function BottomNav() {
       <NavLink to="/materials" className={tab}>
         <span className="ico">🧵</span>材料
       </NavLink>
-      <NavLink to="/compare" className={tab}>
-        <span className="ico">⚖️</span>比較
+      <NavLink to="/templates" className={tab}>
+        <span className="ico">📋</span>テンプレート
       </NavLink>
       <NavLink to="/settings" className={tab}>
         <span className="ico">⚙️</span>設定
@@ -35,7 +35,7 @@ export default function App() {
         <Route path="/work/new" element={<WorkEdit />} />
         <Route path="/work/:id" element={<WorkEdit />} />
         <Route path="/work/:id/sim" element={<PriceSimulation />} />
-        <Route path="/compare" element={<SalesComparison />} />
+        <Route path="/templates" element={<Templates />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
       <BottomNav />

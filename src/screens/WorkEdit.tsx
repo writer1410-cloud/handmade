@@ -9,7 +9,7 @@ import type { Work, WorkMaterial } from "../domain/types";
 export default function WorkEdit() {
   const nav = useNavigate();
   const { id } = useParams();
-  const { data, addWork, updateWork, deleteWork } = useStore();
+  const { data, addWork, updateWork, deleteWork, saveTemplate } = useStore();
   const existing = id ? data.works.find((w) => w.id === id) : undefined;
 
   const [name, setName] = useState(existing?.name ?? "");
@@ -51,6 +51,26 @@ export default function WorkEdit() {
   };
   const selectedMethod = salesMethodId ? data.salesMethods.find((m) => m.id === salesMethodId) ?? null : null;
   const breakdown = workCost(draft, costs, data.settings, selectedMethod);
+
+  const saveAsTemplate = () => {
+    if (!data.settings.isPro) {
+      nav("/settings");
+      return;
+    }
+    const tplName = window.prompt("テンプレート名を入力してください。", name.trim() || "新しいテンプレート");
+    if (tplName === null) return; // キャンセル
+    const created = saveTemplate({
+      name: tplName.trim() || "新しいテンプレート",
+      materials,
+      productionMinutes,
+      packagingCost,
+      shippingCost,
+      otherCost,
+      price,
+      salesMethodId,
+    });
+    if (created) alert("テンプレートとして保存しました。「テンプレート」タブから作品を作れます。");
+  };
 
   const save = (goSim: boolean) => {
     const payload = { name: name.trim() || "無題の作品", materials, productionMinutes, packagingCost, shippingCost, otherCost, price, salesMethodId };
@@ -183,6 +203,9 @@ export default function WorkEdit() {
         </button>
         <button className="btn secondary" style={{ marginTop: 8 }} onClick={() => save(false)}>
           保存する
+        </button>
+        <button className="btn ghost" style={{ marginTop: 8 }} onClick={saveAsTemplate}>
+          📋 テンプレートとして保存{!data.settings.isPro && "（Pro）"}
         </button>
 
         {existing && (

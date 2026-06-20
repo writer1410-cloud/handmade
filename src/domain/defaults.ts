@@ -101,6 +101,7 @@ export function emptyData(): AppData {
     version: DATA_VERSION,
     materials: [],
     works: [],
+    templates: [],
     salesMethods: DEFAULT_SALES_METHODS.map((m) => ({ ...m })),
     settings: { ...DEFAULT_SETTINGS },
   };
