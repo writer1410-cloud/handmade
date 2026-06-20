@@ -4,20 +4,21 @@
 // **Digital Goods API + Payment Request API** 経由で Play Billing を呼び出す。
 // （TWA からのみ window.getDigitalGoodsService が利用可能）
 //
-// 本番では Play Console で以下の定期購入を作成し、ここの PRODUCT_IDS と一致させる：
-//   - hmcc_pro_monthly : 月額300円
-//   - hmcc_pro_yearly  : 年額3,000円
+// 本アプリの課金は「買い切り（1回¥500）」のアプリ内アイテム1つだけ。
+// 購入すると Pro になり、広告が消え、Pro機能が解放される。
+// 本番では Play Console で以下の「1回限りのアイテム（管理対象商品）」を作成し、
+// ここの PRODUCT_ID と一致させる：
+//   - hmcc_pro_unlock : Proロック解除（¥500・買い切り）
 //
 // 参考: https://developer.chrome.com/docs/android/trusted-web-activity/receive-payments-play-billing
 //
 // 現状はローカル（設定の isPro フラグ）で代替し、課金UIと解除のフローだけ用意する。
 
-export const PRODUCT_IDS = {
-  monthly: "hmcc_pro_monthly",
-  yearly: "hmcc_pro_yearly",
-} as const;
+/** Proロック解除（買い切り）の商品ID。Play Console の商品IDと一致させる。 */
+export const PRODUCT_ID = "hmcc_pro_unlock";
 
-export type PlanId = keyof typeof PRODUCT_IDS;
+/** 価格表示用（実際の課金額は Play Console の設定が優先される） */
+export const PRO_PRICE_LABEL = "¥500";
 
 /** TWA(Play配信)上で Digital Goods API が使えるか */
 export function isPlayBillingAvailable(): boolean {
@@ -32,10 +33,10 @@ export interface PurchaseResult {
 }
 
 /**
- * 購入フロー。TWA 上では Digital Goods + PaymentRequest を呼び出す。
+ * 購入フロー（買い切り）。TWA 上では Digital Goods + PaymentRequest を呼び出す。
  * それ以外（開発・ブラウザプレビュー）では unsupported を返す。
  */
-export async function purchase(plan: PlanId): Promise<PurchaseResult> {
+export async function purchase(): Promise<PurchaseResult> {
   if (!isPlayBillingAvailable()) {
     return { ok: false, unsupported: true, message: "Google Play アプリ上でのみ購入できます。" };
   }
@@ -44,27 +45,28 @@ export async function purchase(plan: PlanId): Promise<PurchaseResult> {
     // const service = await (window as any).getDigitalGoodsService(
     //   "https://play.google.com/billing",
     // );
-    // const details = await service.getDetails([PRODUCT_IDS[plan]]);
+    // const details = await service.getDetails([PRODUCT_ID]);
     // const request = new PaymentRequest(
-    //   [{ supportedMethods: "https://play.google.com/billing", data: { sku: PRODUCT_IDS[plan] } }],
-    //   { total: { label: "Pro", amount: { currency: "JPY", value: "0" } } },
+    //   [{ supportedMethods: "https://play.google.com/billing", data: { sku: PRODUCT_ID } }],
+    //   { total: { label: "Pro（買い切り）", amount: { currency: "JPY", value: "0" } } },
     // );
     // const response = await request.show();
     // const { purchaseToken } = response.details;
+    // // 買い切り（消費しない）なので acknowledge して所有を確定する
     // await service.acknowledge(purchaseToken);
     // await response.complete("success");
     // return { ok: true };
-    return { ok: false, message: `購入フローは未配線です（${PRODUCT_IDS[plan]}）。` };
+    return { ok: false, message: `購入フローは未配線です（${PRODUCT_ID}）。` };
   } catch (e) {
     return { ok: false, message: String(e) };
   }
 }
 
-/** 購入の復元。Play Billing では既存の購入トークンを照会する。 */
+/** 購入の復元。買い切りなので既存の購入トークンを照会して所有を確認する。 */
 export async function restore(): Promise<boolean> {
   if (!isPlayBillingAvailable()) return false;
   // const service = await (window as any).getDigitalGoodsService("https://play.google.com/billing");
   // const purchases = await service.listPurchases();
-  // return purchases.some((p) => Object.values(PRODUCT_IDS).includes(p.itemId));
+  // return purchases.some((p) => p.itemId === PRODUCT_ID);
   return false;
 }

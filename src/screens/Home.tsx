@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
 import { AppBar, Empty } from "../components/Common";
+import AdBanner from "../components/AdBanner";
 import { profitAt, unitCostMap } from "../domain/calc";
 import { yen } from "../lib/format";
 import { FREE_LIMITS } from "../domain/defaults";
@@ -79,6 +80,10 @@ export default function Home() {
             );
           })
         )}
+
+        <div style={{ marginTop: 14 }}>
+          <AdBanner />
+        </div>
       </div>
     </>
   );

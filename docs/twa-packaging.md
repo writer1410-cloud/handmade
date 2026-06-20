@@ -76,17 +76,25 @@ TWA はアドレスバーを隠すため、Web サイトとアプリの所有者
 
 Play アプリ署名を使う場合は、Play Console が発行する署名鍵のフィンガープリントも追記します。
 
-## 4. アプリ内課金（月額300円／年額3,000円）
+## 4. アプリ内課金（買い切り ¥500）／広告
 
-TWA からの課金は **Digital Goods API + Payment Request API** 経由で Play Billing を呼びます。
+課金は「買い切り（1回 ¥500）」の管理対象アイテム1つだけ。購入すると Pro になり、
+**広告が消えて**全機能が解放される。継続課金（定期購入）はなし。
+TWA からの課金は **Digital Goods API + Payment Request API** 経由で Play Billing を呼ぶ。
 実装の骨子は `src/billing.ts` にコメントとして記載済み。
 
-1. Play Console ＞ 収益化 ＞ 定期購入で 2 つ作成：
-   - `hmcc_pro_monthly`（月額300円）
-   - `hmcc_pro_yearly`（年額3,000円）
-   `src/billing.ts` の `PRODUCT_IDS` と一致させること。
+1. Play Console ＞ 収益化 ＞ アプリ内アイテム（管理対象商品）を 1 つ作成：
+   - `hmcc_pro_unlock`（Proロック解除・¥500・買い切り）
+   `src/billing.ts` の `PRODUCT_ID` と一致させること。
 2. TWA の Bubblewrap 設定で Play Billing を有効化（`"features": { "playBilling": { "enabled": true } }`）。
-3. 端末上で購入トークンを取得 → サーバー検証（任意）→ `acknowledge` → Pro 解除。
+3. 端末上で購入トークンを取得 → サーバー検証（任意）→ `acknowledge`（消費しない）→ Pro 解除。
+   復元は `listPurchases()` で `hmcc_pro_unlock` の所有を確認する。
+
+### 広告（無料版のみ）
+無料版はホーム画面に広告枠（`src/components/AdBanner.tsx`）を表示する。本番は
+**Google AdMob** のバナーをこの枠に差し込む（TWA に AdMob SDK を組み込む）。
+Pro購入後は `isPro` により広告枠は描画されない。AdMob 利用時は Play Console の
+データセーフティで「広告」目的のデータ利用を申告すること。
 
 > 参考：https://developer.chrome.com/docs/android/trusted-web-activity/receive-payments-play-billing
 
@@ -94,8 +102,8 @@ TWA からの課金は **Digital Goods API + Payment Request API** 経由で Pla
 
 1. アプリを作成し、`bubblewrap build` で生成した **AAB** をアップロード。
 2. ストア掲載情報は [`play-store-listing.md`](play-store-listing.md) を反映。
-3. データセーフティ：データ収集なし（端末内保存）を申告。
-4. アプリ内課金あり（定期購入）を申告。
+3. データセーフティ：アプリのデータ収集なし（端末内保存）。広告(AdMob)利用時はその旨を申告。
+4. アプリ内課金あり（買い切り ¥500）・広告ありを申告。
 5. **クローズドテスト**から開始（計画書 30日計画の最終成果物）→ 製品版へ。
 
 ## チェックリスト（計画書 9. の「28〜30日」に対応）
@@ -103,6 +111,6 @@ TWA からの課金は **Digital Goods API + Payment Request API** 経由で Pla
 - [ ] `npm run build` が通り、Lighthouse PWA 監査に合格
 - [ ] HTTPS で公開済み、manifest / SW が有効
 - [ ] `assetlinks.json` を配置し、アドレスバーが消える
-- [ ] 定期購入 2 種を作成し購入・復元が動作
+- [ ] 買い切りアイテム `hmcc_pro_unlock`（¥500）を作成し購入・復元が動作
 - [ ] スクリーンショット・説明文・アイコンを登録
 - [ ] クローズドテストのトラックに AAB を提出

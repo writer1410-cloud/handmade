@@ -3,7 +3,7 @@ import { useStore } from "../store";
 import { AppBar, NumberField } from "../components/Common";
 import { exportBackup, parseBackup } from "../domain/storage";
 import { materialsToCsv, worksToCsv } from "../domain/csv";
-import { isPlayBillingAvailable, purchase, restore } from "../billing";
+import { isPlayBillingAvailable, PRO_PRICE_LABEL, purchase, restore } from "../billing";
 import type { SalesMethod } from "../domain/types";
 import { yen } from "../lib/format";
 
@@ -26,8 +26,8 @@ export default function Settings() {
 
   const isPro = data.settings.isPro;
 
-  const buy = async (plan: "monthly" | "yearly") => {
-    const res = await purchase(plan);
+  const buy = async () => {
+    const res = await purchase();
     if (res.ok) {
       updateSettings({ isPro: true });
       alert("Proにアップグレードしました。ありがとうございます！");
@@ -72,7 +72,7 @@ export default function Settings() {
           <div className="pro-banner">
             <h3>✨ Pro 利用中</h3>
             <p style={{ margin: 0, fontSize: 14 }}>
-              作品・材料が無制限。価格逆算、販売方法の比較、テンプレート、CSV出力が使えます。
+              作品・材料が無制限。価格逆算、販売方法の比較、テンプレート、CSV出力が使え、広告は表示されません。
             </p>
             <button
               className="btn ghost"
@@ -86,20 +86,16 @@ export default function Settings() {
           </div>
         ) : (
           <div className="pro-banner">
-            <h3>Proにアップグレード</h3>
+            <h3>Proにアップグレード（買い切り）</h3>
             <p style={{ margin: "0 0 12px", fontSize: 14 }}>
-              作品・材料が<strong>無制限</strong>に。価格逆算・販売方法の比較・テンプレート複製・CSV出力・広告なし。
+              <strong>一度の購入でずっとPro。</strong>
+              作品・材料が無制限に。価格逆算・販売方法の比較・テンプレート複製・CSV出力・<strong>広告なし</strong>。
             </p>
-            <div className="row">
-              <button className="btn" onClick={() => buy("monthly")}>
-                月額 300円
-              </button>
-              <button className="btn secondary" onClick={() => buy("yearly")}>
-                年額 3,000円
-              </button>
-            </div>
+            <button className="btn" onClick={() => buy()}>
+              {PRO_PRICE_LABEL}でProにアップグレード
+            </button>
             <p className="fineprint">
-              年額は実質10か月分（2か月分お得）。
+              買い切り（{PRO_PRICE_LABEL}・1回のみ）。月額・年額の継続課金はありません。
               {!isPlayBillingAvailable() && "（このプレビューではPlay課金は動作しません）"}
             </p>
             <button
