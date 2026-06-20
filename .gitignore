@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vite
+coverage
+*.tsbuildinfo
+*.log
+.env
+.env.*
+!.env.example
+twa/.gradle
+twa/build
+twa/app/build
+*.keystore
+*.jks

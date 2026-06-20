@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e98aa4"/>
+      <stop offset="1" stop-color="#c4516f"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- price tag -->
+  <g transform="rotate(-18 256 256)">
+    <rect x="150" y="158" width="212" height="150" rx="26" fill="#ffffff"/>
+    <circle cx="196" cy="204" r="20" fill="#c4516f"/>
+    <!-- yen mark -->
+    <g fill="#c4516f">
+      <path d="M256 214 L286 256 H316 L278 200 H256 Z"/>
+      <path d="M256 214 L226 256 H196 L234 200 H256 Z"/>
+      <rect x="226" y="252" width="60" height="14" rx="7"/>
+      <rect x="226" y="276" width="60" height="14" rx="7"/>
+      <rect x="244" y="252" width="24" height="60" rx="12"/>
+    </g>
+  </g>
+  <!-- thread line -->
+  <path d="M120 392 C 200 348, 312 436, 392 388" stroke="#ffffff" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.9"/>
+</svg>
