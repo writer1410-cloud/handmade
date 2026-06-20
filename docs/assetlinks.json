@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.handmadecost.app",
+      "sha256_cert_fingerprints": [
+        "<署名鍵のSHA-256フィンガープリント（bubblewrap build 後に表示）>",
+        "<Play アプリ署名のSHA-256フィンガープリント（Play Console発行）>"
+      ]
+    }
+  }
+]

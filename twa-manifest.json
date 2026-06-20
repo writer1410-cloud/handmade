@@ -1,0 +1,46 @@
+{
+  "packageId": "com.handmadecost.app",
+  "host": "writer1410-cloud.github.io",
+  "name": "ハンドメイド原価計算",
+  "launcherName": "原価計算",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#e26d8a",
+  "themeColorDark": "#c4516f",
+  "navigationColor": "#e26d8a",
+  "navigationColorDark": "#c4516f",
+  "navigationDividerColor": "#00000000",
+  "navigationDividerColorDark": "#00000000",
+  "backgroundColor": "#fff7f9",
+  "enableNotifications": false,
+  "startUrl": "/handmade/",
+  "iconUrl": "https://writer1410-cloud.github.io/handmade/icons/icon-512.png",
+  "maskableIconUrl": "https://writer1410-cloud.github.io/handmade/icons/icon-maskable-512.png",
+  "webManifestUrl": "https://writer1410-cloud.github.io/handmade/manifest.webmanifest",
+  "fullScopeUrl": "https://writer1410-cloud.github.io/handmade/",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "minSdkVersion": 21,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "fallbackType": "customtabs",
+  "features": {
+    "playBilling": {
+      "enabled": true
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": []
+}
