@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   laborCost,
   materialUnitCost,
+  materialUseUnit,
   profitAt,
   recommendedPrice,
   salesFee,
@@ -31,6 +32,35 @@ describe("materialUnitCost", () => {
   });
   it("購入量0はゼロ除算を避けて0", () => {
     expect(materialUnitCost(mat("a", 1000, 0))).toBe(0);
+  });
+  it("取れる数モード：（購入価格＋送料）÷取れる数", () => {
+    // フェルト¥500を購入、10個取れる → 1個分 ¥50
+    expect(materialUnitCost({ ...mat("felt", 500, 1), yieldCount: 10 })).toBe(50);
+    // 送料込み：（500+100)/10 = 60
+    expect(materialUnitCost({ ...mat("felt", 500, 1, 100), yieldCount: 10 })).toBe(60);
+  });
+  it("取れる数モードでは購入量を無視する", () => {
+    expect(materialUnitCost({ ...mat("felt", 500, 999), yieldCount: 10 })).toBe(50);
+  });
+});
+
+describe("materialUseUnit", () => {
+  it("取れる数ありなら『個分』", () => {
+    expect(materialUseUnit({ unit: "枚", yieldCount: 10 })).toBe("個分");
+  });
+  it("取れる数なしなら購入単位", () => {
+    expect(materialUseUnit({ unit: "cm", yieldCount: 0 })).toBe("cm");
+    expect(materialUseUnit({ unit: "個" })).toBe("個");
+  });
+});
+
+describe("取れる数の作品材料費", () => {
+  it("フェルト1枚10個取り → 作品で1個分使うと材料費¥50", () => {
+    const felt: Material = { ...mat("felt", 500, 1), yieldCount: 10 };
+    const costs = unitCostMap([felt]);
+    expect(workMaterialCost([{ materialId: "felt", qty: 1 }], costs)).toBe(50);
+    // 半分だけ使う作品なら¥25
+    expect(workMaterialCost([{ materialId: "felt", qty: 0.5 }], costs)).toBe(25);
   });
 });
 

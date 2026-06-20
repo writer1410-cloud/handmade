@@ -12,6 +12,13 @@ export interface Material {
   unit: string;
   /** 購入時にかかった送料（円）。単位原価に按分する。 */
   purchaseShipping: number;
+  /**
+   * 取れる数：この購入1セットから作れる完成品の個数（取り都合）。
+   * 例：フェルト1枚(¥500)から商品が10個作れる場合は 10。
+   * 0 または未設定なら通常の「購入量あたり」の単位原価で計算する。
+   * 設定されている場合、使用単位は「個分」になる。
+   */
+  yieldCount?: number;
   createdAt: number;
   updatedAt: number;
 }

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useStore } from "../store";
 import { AppBar, NumberField, TextField } from "../components/Common";
-import { materialUnitCost, unitCostMap, workCost } from "../domain/calc";
+import { materialUnitCost, materialUseUnit, unitCostMap, workCost } from "../domain/calc";
 import { yen } from "../lib/format";
 import type { Work, WorkMaterial } from "../domain/types";
 
@@ -92,12 +92,13 @@ export default function WorkEdit() {
           ) : (
             data.materials.map((m) => {
               const cur = materials.find((x) => x.materialId === m.id);
+              const useUnit = materialUseUnit(m);
               return (
                 <div key={m.id} className="mat-pick-row">
                   <div className="info">
                     <div className="nm">{m.name}</div>
                     <div className="uc">
-                      {yen(materialUnitCost(m))}/{m.unit}
+                      {yen(materialUnitCost(m))}/{useUnit}
                     </div>
                   </div>
                   <input
@@ -110,7 +111,7 @@ export default function WorkEdit() {
                     value={cur?.qty ?? ""}
                     onChange={(e) => setQty(m.id, e.target.value === "" ? 0 : parseFloat(e.target.value))}
                   />
-                  <span style={{ width: 24, fontSize: 12, color: "var(--muted)" }}>{m.unit}</span>
+                  <span style={{ width: 32, fontSize: 12, color: "var(--muted)" }}>{useUnit}</span>
                 </div>
               );
             })

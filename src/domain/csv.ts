@@ -1,5 +1,5 @@
 import type { AppData } from "./types";
-import { profitAt, unitCostMap, workCost } from "./calc";
+import { materialUseUnit, profitAt, unitCostMap, workCost } from "./calc";
 
 // CSV出力（Pro機能）。Excelで開けるよう BOM 付き UTF-8 を想定。
 
@@ -55,15 +55,17 @@ export function worksToCsv(data: AppData): string {
 /** 材料一覧をCSV化する */
 export function materialsToCsv(data: AppData): string {
   const costs = unitCostMap(data.materials);
-  const header = ["材料名", "購入価格", "購入量", "単位", "購入時送料", "単位原価"];
+  const header = ["材料名", "購入価格", "購入量", "単位", "取れる数", "購入時送料", "単位原価", "使用単位"];
   const rows = data.materials.map((m) =>
     [
       esc(m.name),
       round(m.purchasePrice),
       m.purchaseQty,
       esc(m.unit),
+      m.yieldCount && m.yieldCount > 0 ? m.yieldCount : "",
       round(m.purchaseShipping),
       Math.round((costs.get(m.id) ?? 0) * 100) / 100,
+      esc(materialUseUnit(m)),
     ].join(","),
   );
   return "﻿" + [header.join(","), ...rows].join("\r\n");

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
 import { AppBar, Empty, NumberField, TextField } from "../components/Common";
-import { materialUnitCost } from "../domain/calc";
+import { materialUnitCost, materialUseUnit } from "../domain/calc";
 import { yen } from "../lib/format";
 import { FREE_LIMITS } from "../domain/defaults";
 import type { Material } from "../domain/types";
@@ -15,9 +15,21 @@ interface Draft {
   purchaseQty: number;
   unit: string;
   purchaseShipping: number;
+  /** 「取れる数」モードか（1購入から複数個つくれる材料） */
+  byYield: boolean;
+  /** 取れる数（byYield のときに使用） */
+  yieldCount: number;
 }
 
-const emptyDraft: Draft = { name: "", purchasePrice: 0, purchaseQty: 0, unit: "個", purchaseShipping: 0 };
+const emptyDraft: Draft = {
+  name: "",
+  purchasePrice: 0,
+  purchaseQty: 0,
+  unit: "個",
+  purchaseShipping: 0,
+  byYield: false,
+  yieldCount: 0,
+};
 
 export default function Materials() {
   const nav = useNavigate();
@@ -34,6 +46,8 @@ export default function Materials() {
       purchaseQty: m.purchaseQty,
       unit: m.unit,
       purchaseShipping: m.purchaseShipping,
+      byYield: !!m.yieldCount && m.yieldCount > 0,
+      yieldCount: m.yieldCount ?? 0,
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -41,17 +55,33 @@ export default function Materials() {
 
   const save = () => {
     if (!draft.name.trim()) return;
+    const payload = {
+      name: draft.name,
+      purchasePrice: draft.purchasePrice,
+      purchaseShipping: draft.purchaseShipping,
+      // 取れる数モードでは購入量・単位は使わない（個分で扱う）
+      purchaseQty: draft.byYield ? 1 : draft.purchaseQty,
+      unit: draft.byYield ? "個" : draft.unit,
+      yieldCount: draft.byYield ? draft.yieldCount : undefined,
+    };
     if (editing) {
-      updateMaterial(editing, draft);
+      updateMaterial(editing, payload);
     } else {
-      addMaterial(draft);
+      addMaterial(payload);
     }
     setDraft(emptyDraft);
     setEditing(null);
     setShowForm(false);
   };
 
-  const previewUnitCost = materialUnitCost(draft);
+  // プレビュー：現在のモードに応じた単位原価
+  const previewUnitCost = materialUnitCost({
+    purchasePrice: draft.purchasePrice,
+    purchaseShipping: draft.purchaseShipping,
+    purchaseQty: draft.purchaseQty,
+    yieldCount: draft.byYield ? draft.yieldCount : undefined,
+  });
+  const previewUnit = draft.byYield ? "個分" : draft.unit || "単位";
 
   return (
     <>
@@ -92,34 +122,79 @@ export default function Materials() {
                 onChange={(purchaseShipping) => setDraft({ ...draft, purchaseShipping })}
               />
             </div>
-            <div className="row">
-              <NumberField
-                label="購入量"
-                value={draft.purchaseQty}
-                onChange={(purchaseQty) => setDraft({ ...draft, purchaseQty })}
-              />
-              <label className="field">
-                <span>単位</span>
-                <input
-                  list="unit-presets"
-                  value={draft.unit}
-                  onChange={(e) => setDraft({ ...draft, unit: e.target.value })}
+
+            {/* 原価の数え方を切り替え */}
+            <label className="field">
+              <span>原価の数え方</span>
+              <div className="tag-pick">
+                <button
+                  type="button"
+                  className={!draft.byYield ? "on" : ""}
+                  onClick={() => setDraft({ ...draft, byYield: false })}
+                >
+                  購入量で計算
+                </button>
+                <button
+                  type="button"
+                  className={draft.byYield ? "on" : ""}
+                  onClick={() => setDraft({ ...draft, byYield: true })}
+                >
+                  取れる数で計算
+                </button>
+              </div>
+            </label>
+
+            {draft.byYield ? (
+              <>
+                <NumberField
+                  label="取れる数（この購入で何個つくれる？）"
+                  suffix="個"
+                  value={draft.yieldCount}
+                  onChange={(yieldCount) => setDraft({ ...draft, yieldCount })}
                 />
-                <datalist id="unit-presets">
-                  {UNIT_PRESETS.map((u) => (
-                    <option key={u} value={u} />
-                  ))}
-                </datalist>
-              </label>
-            </div>
+                <p className="fineprint" style={{ marginTop: -6 }}>
+                  例：フェルト1枚（¥500）から商品が10個つくれる → 取れる数「10」。作品では「1個分」使います。
+                </p>
+              </>
+            ) : (
+              <div className="row">
+                <NumberField
+                  label="購入量"
+                  value={draft.purchaseQty}
+                  onChange={(purchaseQty) => setDraft({ ...draft, purchaseQty })}
+                />
+                <label className="field">
+                  <span>単位</span>
+                  <input
+                    list="unit-presets"
+                    value={draft.unit}
+                    onChange={(e) => setDraft({ ...draft, unit: e.target.value })}
+                  />
+                  <datalist id="unit-presets">
+                    {UNIT_PRESETS.map((u) => (
+                      <option key={u} value={u} />
+                    ))}
+                  </datalist>
+                </label>
+              </div>
+            )}
 
             <div className="alert info" style={{ marginTop: 4 }}>
               <span>🧮</span>
               <div>
-                単位原価 ＝（購入価格＋送料）÷購入量 ={" "}
-                <strong>
-                  {yen(previewUnitCost)}/{draft.unit || "単位"}
-                </strong>
+                {draft.byYield ? (
+                  <>
+                    1個あたりの材料費 ＝（購入価格＋送料）÷取れる数 ={" "}
+                    <strong>{yen(previewUnitCost)}/個分</strong>
+                  </>
+                ) : (
+                  <>
+                    単位原価 ＝（購入価格＋送料）÷購入量 ={" "}
+                    <strong>
+                      {yen(previewUnitCost)}/{previewUnit}
+                    </strong>
+                  </>
+                )}
               </div>
             </div>
 
@@ -151,22 +226,25 @@ export default function Materials() {
         ) : (
           [...data.materials]
             .sort((a, b) => b.updatedAt - a.updatedAt)
-            .map((m) => (
-              <div key={m.id} className="list-item" onClick={() => startEdit(m)}>
-                <div className="main">
-                  <div className="name">{m.name}</div>
-                  <div className="sub">
-                    {yen(m.purchasePrice)}
-                    {m.purchaseShipping > 0 && `＋送料${yen(m.purchaseShipping)}`} / {m.purchaseQty}
-                    {m.unit}
+            .map((m) => {
+              const useUnit = materialUseUnit(m);
+              return (
+                <div key={m.id} className="list-item" onClick={() => startEdit(m)}>
+                  <div className="main">
+                    <div className="name">{m.name}</div>
+                    <div className="sub">
+                      {yen(m.purchasePrice)}
+                      {m.purchaseShipping > 0 && `＋送料${yen(m.purchaseShipping)}`}
+                      {m.yieldCount && m.yieldCount > 0 ? ` / ${m.yieldCount}個取り` : ` / ${m.purchaseQty}${m.unit}`}
+                    </div>
+                  </div>
+                  <div className="trail">
+                    {yen(materialUnitCost(m))}
+                    <div style={{ fontSize: 11, color: "var(--muted)", fontWeight: 400 }}>/{useUnit}</div>
                   </div>
                 </div>
-                <div className="trail">
-                  {yen(materialUnitCost(m))}
-                  <div style={{ fontSize: 11, color: "var(--muted)", fontWeight: 400 }}>/{m.unit}</div>
-                </div>
-              </div>
-            ))
+              );
+            })
         )}
 
         {editing && (

@@ -10,13 +10,28 @@ export function num(v: unknown): number {
 }
 
 /**
- * 材料単位原価 ＝（購入価格 ＋ 購入時送料）÷ 購入量
- * 購入量が 0 の場合は 0 を返す（ゼロ除算回避）。
+ * 材料単位原価（使用1単位あたりの原価）。
+ * - 取れる数（yieldCount）が設定されていれば「1個分」あたり：
+ *     （購入価格 ＋ 購入時送料）÷ 取れる数
+ *   例：フェルト¥500・送料0・取れる数10 → ¥50/個分
+ * - それ以外は「購入量あたり」：
+ *     （購入価格 ＋ 購入時送料）÷ 購入量
+ * 分母が 0 以下の場合は 0 を返す（ゼロ除算回避）。
  */
-export function materialUnitCost(m: Pick<Material, "purchasePrice" | "purchaseShipping" | "purchaseQty">): number {
+export function materialUnitCost(
+  m: Pick<Material, "purchasePrice" | "purchaseShipping" | "purchaseQty" | "yieldCount">,
+): number {
+  const total = num(m.purchasePrice) + num(m.purchaseShipping);
+  const yieldCount = num(m.yieldCount);
+  if (yieldCount > 0) return total / yieldCount;
   const qty = num(m.purchaseQty);
   if (qty <= 0) return 0;
-  return (num(m.purchasePrice) + num(m.purchaseShipping)) / qty;
+  return total / qty;
+}
+
+/** 使用量を入力するときの単位ラベル。取れる数モードでは「個分」。 */
+export function materialUseUnit(m: Pick<Material, "unit" | "yieldCount">): string {
+  return num(m.yieldCount) > 0 ? "個分" : m.unit;
 }
 
 /** 材料IDから単位原価を引くためのマップを作る */
