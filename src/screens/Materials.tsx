@@ -7,7 +7,9 @@ import { yen } from "../lib/format";
 import { FREE_LIMITS } from "../domain/defaults";
 import type { Material } from "../domain/types";
 
-const UNIT_PRESETS = ["個", "g", "cm", "m", "枚", "本", "ml", "セット"];
+// よく使う単位（タップで選択／自由入力も可）。
+// 個数もの・重さ（レジン/粘土）・長さ（チェーン/リボン）・面積/枚数（布/フェルト）などに対応。
+const UNIT_PRESETS = ["個", "g", "ml", "cm", "m", "枚", "本", "粒", "セット"];
 
 interface Draft {
   name: string;
@@ -157,26 +159,39 @@ export default function Materials() {
                 </p>
               </>
             ) : (
-              <div className="row">
+              <>
                 <NumberField
                   label="購入量"
+                  suffix={draft.unit || undefined}
                   value={draft.purchaseQty}
                   onChange={(purchaseQty) => setDraft({ ...draft, purchaseQty })}
                 />
                 <label className="field">
-                  <span>単位</span>
+                  <span>単位（材料に合わせて選択）</span>
+                  <div className="tag-pick">
+                    {UNIT_PRESETS.map((u) => (
+                      <button
+                        type="button"
+                        key={u}
+                        className={draft.unit === u ? "on" : ""}
+                        onClick={() => setDraft({ ...draft, unit: u })}
+                      >
+                        {u}
+                      </button>
+                    ))}
+                  </div>
                   <input
-                    list="unit-presets"
-                    value={draft.unit}
+                    style={{ marginTop: 8 }}
+                    value={UNIT_PRESETS.includes(draft.unit) ? "" : draft.unit}
+                    placeholder="その他の単位を入力（例：玉・袋・色）"
                     onChange={(e) => setDraft({ ...draft, unit: e.target.value })}
                   />
-                  <datalist id="unit-presets">
-                    {UNIT_PRESETS.map((u) => (
-                      <option key={u} value={u} />
-                    ))}
-                  </datalist>
                 </label>
-              </div>
+                <p className="fineprint" style={{ marginTop: -6 }}>
+                  例：レジン液を100g・1,200円で購入 → 単位「g」・購入量「100」。1作品に5g使えば材料費は{" "}
+                  <strong>60円</strong>（12円/g×5g）と自動計算されます。
+                </p>
+              </>
             )}
 
             <div className="alert info" style={{ marginTop: 4 }}>
