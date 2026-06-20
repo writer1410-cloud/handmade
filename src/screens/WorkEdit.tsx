@@ -19,6 +19,7 @@ export default function WorkEdit() {
     existing?.packagingCost ?? data.settings.standardPackagingCost,
   );
   const [otherCost, setOtherCost] = useState(existing?.otherCost ?? 0);
+  const [shippingCost, setShippingCost] = useState(existing?.shippingCost ?? 0);
   const [price, setPrice] = useState(existing?.price ?? 0);
   const [salesMethodId, setSalesMethodId] = useState<string | null>(
     existing?.salesMethodId ?? data.salesMethods[0]?.id ?? null,
@@ -41,6 +42,7 @@ export default function WorkEdit() {
     materials,
     productionMinutes,
     packagingCost,
+    shippingCost,
     otherCost,
     price,
     salesMethodId,
@@ -48,9 +50,10 @@ export default function WorkEdit() {
     updatedAt: 0,
   };
   const breakdown = workCost(draft, costs, data.settings);
+  const selectedMethod = salesMethodId ? data.salesMethods.find((m) => m.id === salesMethodId) ?? null : null;
 
   const save = (goSim: boolean) => {
-    const payload = { name: name.trim() || "無題の作品", materials, productionMinutes, packagingCost, otherCost, price, salesMethodId };
+    const payload = { name: name.trim() || "無題の作品", materials, productionMinutes, packagingCost, shippingCost, otherCost, price, salesMethodId };
     if (existing) {
       updateWork(existing.id, payload);
       if (goSim) nav(`/work/${existing.id}/sim`);
@@ -75,8 +78,16 @@ export default function WorkEdit() {
           />
           <div className="row">
             <NumberField label="梱包費" suffix="円" value={packagingCost} onChange={setPackagingCost} />
-            <NumberField label="その他経費" suffix="円" value={otherCost} onChange={setOtherCost} />
+            <NumberField label="送料" suffix="円" value={shippingCost} onChange={setShippingCost} />
           </div>
+          <NumberField label="その他経費" suffix="円" value={otherCost} onChange={setOtherCost} />
+          <p className="fineprint" style={{ marginTop: -4 }}>
+            送料は発送にかかる金額（例：ネコポス¥210）。「送料込み」の販売方法のときに差し引かれます。対面販売など送料負担なしの方法では計算に含まれません。
+            {selectedMethod &&
+              (selectedMethod.sellerPaysShipping
+                ? `　現在の「${selectedMethod.name}」は送料込み（差し引く）。`
+                : `　現在の「${selectedMethod.name}」は送料負担なし。`)}
+          </p>
         </div>
 
         <div className="card">

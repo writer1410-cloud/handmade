@@ -60,7 +60,7 @@ export default function Settings() {
     feePercent: 0,
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: false,
   });
 
   return (
@@ -151,7 +151,7 @@ export default function Settings() {
                 <div className="sub">
                   手数料{m.feePercent}%{m.consignmentPercent > 0 && ` ＋委託${m.consignmentPercent}%`}
                   {m.fixedFee > 0 && ` ＋${yen(m.fixedFee)}`}
-                  {m.shippingBurden > 0 && ` ＋送料${yen(m.shippingBurden)}`}
+                  {m.sellerPaysShipping && ` ・送料込み`}
                 </div>
               </div>
               <div className="trail" style={{ fontSize: 13, color: "var(--muted)" }}>
@@ -191,20 +191,31 @@ export default function Settings() {
                 onChange={(consignmentPercent) => setMethodDraft({ ...methodDraft, consignmentPercent })}
               />
             </div>
-            <div className="row">
-              <NumberField
-                label="固定手数料"
-                suffix="円"
-                value={methodDraft.fixedFee}
-                onChange={(fixedFee) => setMethodDraft({ ...methodDraft, fixedFee })}
-              />
-              <NumberField
-                label="送料の自己負担"
-                suffix="円"
-                value={methodDraft.shippingBurden}
-                onChange={(shippingBurden) => setMethodDraft({ ...methodDraft, shippingBurden })}
-              />
-            </div>
+            <NumberField
+              label="固定手数料"
+              suffix="円"
+              value={methodDraft.fixedFee}
+              onChange={(fixedFee) => setMethodDraft({ ...methodDraft, fixedFee })}
+            />
+            <label className="field">
+              <span>送料</span>
+              <div className="tag-pick">
+                <button
+                  type="button"
+                  className={methodDraft.sellerPaysShipping ? "on" : ""}
+                  onClick={() => setMethodDraft({ ...methodDraft, sellerPaysShipping: true })}
+                >
+                  送料込み（作家が負担）
+                </button>
+                <button
+                  type="button"
+                  className={!methodDraft.sellerPaysShipping ? "on" : ""}
+                  onClick={() => setMethodDraft({ ...methodDraft, sellerPaysShipping: false })}
+                >
+                  送料負担なし
+                </button>
+              </div>
+            </label>
             <div className="row">
               <button className="btn ghost" onClick={() => setMethodDraft(null)}>
                 キャンセル

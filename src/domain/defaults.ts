@@ -28,7 +28,7 @@ export const DEFAULT_SALES_METHODS: SalesMethod[] = [
     feePercent: 10, // 販売手数料 10%
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: true,
     builtin: true,
   },
   {
@@ -37,7 +37,7 @@ export const DEFAULT_SALES_METHODS: SalesMethod[] = [
     feePercent: 6, // 4.5〜10%の変動制。目安として6%。
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: true,
     builtin: true,
   },
   {
@@ -46,7 +46,7 @@ export const DEFAULT_SALES_METHODS: SalesMethod[] = [
     feePercent: 5, // 販売手数料 5%
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: true,
     builtin: true,
   },
   {
@@ -55,7 +55,7 @@ export const DEFAULT_SALES_METHODS: SalesMethod[] = [
     feePercent: 10.56, // 販売手数料 10.56%（税込）
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: true,
     builtin: true,
   },
   {
@@ -64,7 +64,7 @@ export const DEFAULT_SALES_METHODS: SalesMethod[] = [
     feePercent: 11, // 販売手数料 11%（税込）
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: true,
     builtin: true,
   },
   {
@@ -73,7 +73,7 @@ export const DEFAULT_SALES_METHODS: SalesMethod[] = [
     feePercent: 0,
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: false,
     builtin: true,
   },
   {
@@ -82,7 +82,7 @@ export const DEFAULT_SALES_METHODS: SalesMethod[] = [
     feePercent: 0,
     fixedFee: 0,
     consignmentPercent: 30,
-    shippingBurden: 0,
+    sellerPaysShipping: false,
     builtin: true,
   },
   {
@@ -91,7 +91,7 @@ export const DEFAULT_SALES_METHODS: SalesMethod[] = [
     feePercent: 0,
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: false,
     builtin: true,
   },
 ];

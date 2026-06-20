@@ -30,9 +30,29 @@ function migrate(parsed: Partial<AppData>): AppData {
   return {
     version: DATA_VERSION,
     materials: parsed.materials ?? base.materials,
-    works: parsed.works ?? base.works,
+    works: (parsed.works ?? base.works).map(normalizeWork),
     salesMethods: mergeSalesMethods(parsed.salesMethods, base.salesMethods),
     settings: { ...base.settings, ...parsed.settings },
+  };
+}
+
+/** 旧データの作品に送料フィールドを補完する。 */
+function normalizeWork(w: AppData["works"][number]): AppData["works"][number] {
+  return { ...w, shippingCost: typeof w.shippingCost === "number" ? w.shippingCost : 0 };
+}
+
+/** 旧データの販売方法を新スキーマ（sellerPaysShipping）へ変換する。 */
+function normalizeMethod(m: SalesMethod & { shippingBurden?: number }): SalesMethod {
+  const sellerPaysShipping =
+    typeof m.sellerPaysShipping === "boolean" ? m.sellerPaysShipping : (m.shippingBurden ?? 0) > 0;
+  return {
+    id: m.id,
+    name: m.name,
+    feePercent: m.feePercent,
+    fixedFee: m.fixedFee,
+    consignmentPercent: m.consignmentPercent,
+    sellerPaysShipping,
+    builtin: m.builtin,
   };
 }
 
@@ -44,9 +64,10 @@ function migrate(parsed: Partial<AppData>): AppData {
  */
 function mergeSalesMethods(saved: SalesMethod[] | undefined, builtins: SalesMethod[]): SalesMethod[] {
   if (!saved?.length) return builtins;
-  const existingIds = new Set(saved.map((m) => m.id));
+  const normalized = saved.map(normalizeMethod);
+  const existingIds = new Set(normalized.map((m) => m.id));
   const missingBuiltins = builtins.filter((b) => !existingIds.has(b.id));
-  return [...saved, ...missingBuiltins];
+  return [...normalized, ...missingBuiltins];
 }
 
 /** バックアップ（JSON）として書き出す文字列を作る */

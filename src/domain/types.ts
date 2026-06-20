@@ -39,6 +39,9 @@ export interface Work {
   productionMinutes: number;
   /** 梱包費（円） */
   packagingCost: number;
+  /** 送料（円）：この作品の発送にかかる送料（ネコポス・宅急便コンパクト等）。
+   *  販売方法が「送料込み（作家負担）」のときに原価から差し引かれる。 */
+  shippingCost: number;
   /** その他経費（円）：タグ・ラッピング・design使用料など */
   otherCost: number;
   /** 想定販売価格（円）。価格シミュレーションの初期値。 */
@@ -59,8 +62,9 @@ export interface SalesMethod {
   fixedFee: number;
   /** 委託料率（％）：委託販売の取り分。0なら無し。 */
   consignmentPercent: number;
-  /** 送料の自己負担額（円）。送料無料販売で作家が負担する分。 */
-  shippingBurden: number;
+  /** 送料を作家が負担するか（送料込み販売）。
+   *  true なら作品の送料を原価から差し引く。対面販売などは false。 */
+  sellerPaysShipping: boolean;
   /** 削除不可の組み込みテンプレートか */
   builtin?: boolean;
 }

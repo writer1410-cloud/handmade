@@ -127,15 +127,15 @@ export default function PriceSimulation() {
               <span className="muted">− 販売手数料{method ? `（${method.name}）` : ""}</span>
               <span>−{yen(r.fee)}</span>
             </li>
-            {method && method.shippingBurden > 0 && (
+            {r.shipping > 0 && (
               <li>
-                <span className="muted">− 送料負担</span>
-                <span>−{yen(method.shippingBurden)}</span>
+                <span className="muted">− 送料（送料込み）</span>
+                <span>−{yen(r.shipping)}</span>
               </li>
             )}
             <li>
               <span className="muted">− 材料費・梱包費・その他</span>
-              <span>−{yen(r.price - r.fee - (method?.shippingBurden ?? 0) - r.netProfit)}</span>
+              <span>−{yen(r.price - r.fee - r.shipping - r.netProfit)}</span>
             </li>
             <li className="total">
               <span>手取り利益</span>

@@ -87,7 +87,7 @@ describe("salesFee", () => {
     feePercent: 10,
     fixedFee: 60,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: false,
   };
   it("価格×率＋固定手数料", () => {
     // 3000円 × 10% + 60 = 360
@@ -108,6 +108,7 @@ describe("workCost (総原価)", () => {
       materials: [{ materialId: "a", qty: 5 }], // 50円
       productionMinutes: 60, // 人件費 1000円
       packagingCost: 50,
+      shippingCost: 0,
       otherCost: 30,
       price: 0,
       salesMethodId: null,
@@ -130,6 +131,7 @@ describe("profitAt", () => {
     materials: [{ materialId: "a", qty: 10 }], // 材料費100円
     productionMinutes: 60,
     packagingCost: 100,
+    shippingCost: 200,
     otherCost: 0,
     price: 3000,
     salesMethodId: null,
@@ -142,7 +144,7 @@ describe("profitAt", () => {
     feePercent: 10,
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 200,
+    sellerPaysShipping: true,
   };
 
   it("手取り利益＝価格－手数料－送料負担－材料費－梱包費－その他", () => {
@@ -171,6 +173,19 @@ describe("profitAt", () => {
     expect(r.isLoss).toBe(true);
     expect(r.netProfit).toBeLessThan(0);
   });
+
+  it("送料込みでない販売方法では送料を差し引かない（対面など）", () => {
+    const inPerson: SalesMethod = { ...method, name: "対面", feePercent: 0, sellerPaysShipping: false };
+    const r = profitAt(3000, work, costs, inPerson);
+    // 手数料0・送料引かない → net = 3000 - 0 - 材料100 - 梱包100 = 2800
+    expect(r.shipping).toBe(0);
+    expect(r.netProfit).toBe(2800);
+  });
+
+  it("送料込みの販売方法では作品の送料を差し引く", () => {
+    const r = profitAt(3000, work, costs, method);
+    expect(r.shipping).toBe(200); // work.shippingCost
+  });
 });
 
 describe("recommendedPrice (価格逆算)", () => {
@@ -182,6 +197,7 @@ describe("recommendedPrice (価格逆算)", () => {
     materials: [{ materialId: "a", qty: 10 }], // 材料費100円
     productionMinutes: 60, // 目標時給1000 → 人件費1000
     packagingCost: 100,
+    shippingCost: 0,
     otherCost: 0,
     price: 0,
     salesMethodId: null,
@@ -194,7 +210,7 @@ describe("recommendedPrice (価格逆算)", () => {
     feePercent: 10,
     fixedFee: 0,
     consignmentPercent: 0,
-    shippingBurden: 0,
+    sellerPaysShipping: false,
   };
 
   it("目標時給を確保できる価格を逆算（手数料率込み）", () => {

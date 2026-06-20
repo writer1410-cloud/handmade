@@ -94,7 +94,7 @@ export default function SalesComparison() {
               <thead>
                 <tr>
                   <th>販売方法</th>
-                  <th>手数料</th>
+                  <th>手数料＋送料</th>
                   <th>手取り</th>
                   <th>実質時給</th>
                 </tr>
@@ -110,7 +110,7 @@ export default function SalesComparison() {
                         </span>
                       )}
                     </td>
-                    <td>{yen(result.fee + (method.shippingBurden || 0))}</td>
+                    <td>{yen(result.fee + result.shipping)}</td>
                     <td style={{ color: result.isLoss ? "var(--red)" : "var(--green)", fontWeight: 700 }}>
                       {yen(result.netProfit)}
                     </td>
@@ -120,7 +120,8 @@ export default function SalesComparison() {
               </tbody>
             </table>
             <p className="fineprint">
-              手数料率・委託率・送料負担は「設定 ＞ 販売方法」で各サービスの最新規約に合わせて編集できます。
+              送料は作品ごとの「送料」を使い、「送料込み」の販売方法でのみ差し引きます（対面などは差し引きません）。
+              手数料率・委託率は「設定 ＞ 販売方法」で各サービスの最新規約に合わせて編集できます。
             </p>
           </div>
         ) : (
@@ -137,7 +138,7 @@ export default function SalesComparison() {
 
         <div className="alert info">
           <span>📐</span>
-          <div>手数料率（％）に委託率も含めて手取りを計算します。送料を作家が負担する場合は販売方法に送料負担を設定してください。</div>
+          <div>手数料率（％）に委託率も含めて手取りを計算します。送料は作品ごとに入力し、「送料込み」の販売方法のときに差し引かれます。</div>
         </div>
       </div>
     </>
