@@ -297,6 +297,16 @@ export default function Settings() {
           <p className="fineprint" style={{ marginTop: 0 }}>
             本アプリは価格・利益の試算ツールです。税務・会計・法的な助言を行うものではありません。手数料率や送料は各販売サービスの最新規約をご確認のうえ、ご自身の判断で価格を設定してください。算出される推奨価格は目安です。
           </p>
+          <p style={{ margin: "4px 0 0" }}>
+            <a
+              className="link"
+              href={`${import.meta.env.BASE_URL}privacy.html`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              プライバシーポリシー
+            </a>
+          </p>
           <p className="fineprint">バージョン 0.1.0（MVP）</p>
         </div>
       </div>
