@@ -64,8 +64,9 @@ bubblewrap build      # app-release-bundle.aab（AAB）と app-release-signed.ap
 ## 3. Digital Asset Links（URL とアプリの紐付け）
 
 TWA はアドレスバーを隠すため、Web サイトとアプリの所有者一致を証明する必要があります。
-配置すべき内容は **`docs/assetlinks.json`** に用意済み（`package_name` 設定済み・
-フィンガープリントのみ要記入）。
+配置すべき内容は **`docs/github-pages-root/`** に用意済み（ルートリポジトリへ
+フォルダごとコピーするだけ。`package_name` 設定済み・フィンガープリントのみ要記入）。
+詳細は同フォルダの `README.md` を参照。
 
 ### ⚠️ GitHub Pages（プロジェクトページ）での重要な注意
 
@@ -86,7 +87,7 @@ Chrome は Digital Asset Links を **ドメインのルート** から取得し�
 
 ### 記入するフィンガープリント
 
-`docs/assetlinks.json` の `sha256_cert_fingerprints` に、以下2つを記入します：
+`docs/github-pages-root/.well-known/assetlinks.json` の `sha256_cert_fingerprints` に、以下2つを記入します：
 
 1. `bubblewrap build` 後に表示される**署名鍵**の SHA-256 フィンガープリント。
 2. Play アプリ署名を使う場合は、**Play Console が発行する署名鍵**の SHA-256 も追記。

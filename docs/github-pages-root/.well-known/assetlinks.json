@@ -5,8 +5,8 @@
       "namespace": "android_app",
       "package_name": "com.handmadecost.app",
       "sha256_cert_fingerprints": [
-        "<署名鍵のSHA-256フィンガープリント（bubblewrap build 後に表示）>",
-        "<Play アプリ署名のSHA-256フィンガープリント（Play Console発行）>"
+        "REPLACE_WITH_UPLOAD_KEY_SHA256",
+        "REPLACE_WITH_PLAY_APP_SIGNING_SHA256"
       ]
     }
   }
