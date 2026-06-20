@@ -118,7 +118,40 @@ describe("workCost (総原価)", () => {
     const b = workCost(work, costs, settings);
     expect(b.materialCost).toBe(50);
     expect(b.laborCost).toBe(1000);
+    expect(b.shippingCost).toBe(0);
     expect(b.totalCost).toBe(50 + 1000 + 50 + 30);
+  });
+
+  it("送料込みの販売方法では送料も総原価に含む", () => {
+    const materials = [mat("a", 1000, 100)];
+    const costs = unitCostMap(materials);
+    const work: Work = {
+      id: "w",
+      name: "ピアス",
+      materials: [{ materialId: "a", qty: 5 }], // 50円
+      productionMinutes: 60, // 1000円
+      packagingCost: 50,
+      shippingCost: 210,
+      otherCost: 30,
+      price: 0,
+      salesMethodId: null,
+      createdAt: 0,
+      updatedAt: 0,
+    };
+    const online: SalesMethod = {
+      id: "m",
+      name: "メルカリ",
+      feePercent: 10,
+      fixedFee: 0,
+      consignmentPercent: 0,
+      sellerPaysShipping: true,
+    };
+    const inPerson: SalesMethod = { ...online, name: "対面", sellerPaysShipping: false };
+    expect(workCost(work, costs, settings, online).shippingCost).toBe(210);
+    expect(workCost(work, costs, settings, online).totalCost).toBe(50 + 1000 + 50 + 210 + 30);
+    // 送料負担なしの方法では送料は0
+    expect(workCost(work, costs, settings, inPerson).shippingCost).toBe(0);
+    expect(workCost(work, costs, settings, inPerson).totalCost).toBe(50 + 1000 + 50 + 30);
   });
 });
 

@@ -33,7 +33,7 @@ export function worksToCsv(data: AppData): string {
   ];
   const rows = data.works.map((w) => {
     const method = w.salesMethodId ? methodById.get(w.salesMethodId) ?? null : null;
-    const c = workCost(w, costs, data.settings);
+    const c = workCost(w, costs, data.settings, method);
     const p = profitAt(w.price, w, costs, method);
     return [
       esc(w.name),
@@ -41,7 +41,7 @@ export function worksToCsv(data: AppData): string {
       round(c.materialCost),
       round(c.laborCost),
       round(c.packagingCost),
-      round(w.shippingCost),
+      round(c.shippingCost),
       round(c.otherCost),
       round(c.totalCost),
       esc(method?.name ?? "未設定"),

@@ -49,8 +49,8 @@ export default function WorkEdit() {
     createdAt: existing?.createdAt ?? 0,
     updatedAt: 0,
   };
-  const breakdown = workCost(draft, costs, data.settings);
   const selectedMethod = salesMethodId ? data.salesMethods.find((m) => m.id === salesMethodId) ?? null : null;
+  const breakdown = workCost(draft, costs, data.settings, selectedMethod);
 
   const save = (goSim: boolean) => {
     const payload = { name: name.trim() || "無題の作品", materials, productionMinutes, packagingCost, shippingCost, otherCost, price, salesMethodId };
@@ -159,6 +159,13 @@ export default function WorkEdit() {
             <li>
               <span className="muted">梱包費</span>
               <span>{yen(breakdown.packagingCost)}</span>
+            </li>
+            <li>
+              <span className="muted">
+                送料
+                {selectedMethod && !selectedMethod.sellerPaysShipping && shippingCost > 0 && "（負担なし）"}
+              </span>
+              <span>{yen(breakdown.shippingCost)}</span>
             </li>
             <li>
               <span className="muted">その他経費</span>

@@ -67,25 +67,36 @@ export interface WorkCostBreakdown {
   materialCost: number;
   laborCost: number;
   packagingCost: number;
+  /** 送料（作家が負担する分。販売方法が送料込みのときのみ計上） */
+  shippingCost: number;
   otherCost: number;
-  /** 総原価 ＝ 材料費＋人件費相当＋梱包費＋その他経費 */
+  /** 総原価 ＝ 材料費＋人件費相当＋梱包費＋送料＋その他経費 */
   totalCost: number;
 }
 
 /**
- * 総原価 ＝ 材料費＋人件費相当＋梱包費＋その他経費
+ * 総原価 ＝ 材料費＋人件費相当＋梱包費＋送料＋その他経費
+ * 送料は販売方法が「送料込み（作家負担）」のときのみ計上する。
+ * method を省略（null）した場合は送料込みとみなす。
  */
-export function workCost(work: Work, costs: Map<string, number>, settings: Settings): WorkCostBreakdown {
+export function workCost(
+  work: Work,
+  costs: Map<string, number>,
+  settings: Settings,
+  method: SalesMethod | null = null,
+): WorkCostBreakdown {
   const materialCost = workMaterialCost(work.materials, costs);
   const labor = laborCost(work.productionMinutes, settings.targetHourlyWage);
   const packagingCost = num(work.packagingCost);
+  const shippingCost = workShipping(work, method);
   const otherCost = num(work.otherCost);
   return {
     materialCost,
     laborCost: labor,
     packagingCost,
+    shippingCost,
     otherCost,
-    totalCost: materialCost + labor + packagingCost + otherCost,
+    totalCost: materialCost + labor + packagingCost + shippingCost + otherCost,
   };
 }
 
