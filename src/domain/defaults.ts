@@ -17,13 +17,51 @@ export const DEFAULT_SETTINGS: Settings = {
 /**
  * 国内ハンドメイド販売の代表的な販売方法テンプレート。
  * 手数料率は固定値にせずユーザーが編集できる（計画書 リスク対策）。
- * 初期値は一般的な目安であり、最新の各サービス規約で要確認。
+ * 初期値は2026年時点の各サービスの公表値を目安に設定しているが、
+ * 手数料は改定されるため、最新の各サービス規約で要確認。
+ * ※「その他のプラットフォーム」は設定画面から手動で追加できる。
  */
 export const DEFAULT_SALES_METHODS: SalesMethod[] = [
   {
-    id: "online-platform",
-    name: "オンライン販売（手数料あり）",
-    feePercent: 11,
+    id: "mercari",
+    name: "メルカリ",
+    feePercent: 10, // 販売手数料 10%
+    fixedFee: 0,
+    consignmentPercent: 0,
+    shippingBurden: 0,
+    builtin: true,
+  },
+  {
+    id: "rakuma",
+    name: "ラクマ",
+    feePercent: 6, // 4.5〜10%の変動制。目安として6%。
+    fixedFee: 0,
+    consignmentPercent: 0,
+    shippingBurden: 0,
+    builtin: true,
+  },
+  {
+    id: "yahoo-flea",
+    name: "ヤフーフリマ",
+    feePercent: 5, // 販売手数料 5%
+    fixedFee: 0,
+    consignmentPercent: 0,
+    shippingBurden: 0,
+    builtin: true,
+  },
+  {
+    id: "minne",
+    name: "minne（ミンネ）",
+    feePercent: 10.56, // 販売手数料 10.56%（税込）
+    fixedFee: 0,
+    consignmentPercent: 0,
+    shippingBurden: 0,
+    builtin: true,
+  },
+  {
+    id: "creema",
+    name: "Creema（クリーマ）",
+    feePercent: 11, // 販売手数料 11%（税込）
     fixedFee: 0,
     consignmentPercent: 0,
     shippingBurden: 0,

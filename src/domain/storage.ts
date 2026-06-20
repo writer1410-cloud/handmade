@@ -1,4 +1,4 @@
-import type { AppData } from "./types";
+import type { AppData, SalesMethod } from "./types";
 import { DATA_VERSION, emptyData } from "./defaults";
 
 // 端末内（localStorage）にのみ保存する。クラウド送信は一切しない。
@@ -31,9 +31,22 @@ function migrate(parsed: Partial<AppData>): AppData {
     version: DATA_VERSION,
     materials: parsed.materials ?? base.materials,
     works: parsed.works ?? base.works,
-    salesMethods: parsed.salesMethods?.length ? parsed.salesMethods : base.salesMethods,
+    salesMethods: mergeSalesMethods(parsed.salesMethods, base.salesMethods),
     settings: { ...base.settings, ...parsed.settings },
   };
+}
+
+/**
+ * 販売方法のマージ。
+ * - 保存済みが無ければ初期テンプレートをそのまま使う。
+ * - 保存済みがあれば、ユーザーの編集・追加分を保持しつつ、
+ *   未登録の組み込みテンプレート（新プラットフォーム等）を追加する。
+ */
+function mergeSalesMethods(saved: SalesMethod[] | undefined, builtins: SalesMethod[]): SalesMethod[] {
+  if (!saved?.length) return builtins;
+  const existingIds = new Set(saved.map((m) => m.id));
+  const missingBuiltins = builtins.filter((b) => !existingIds.has(b.id));
+  return [...saved, ...missingBuiltins];
 }
 
 /** バックアップ（JSON）として書き出す文字列を作る */

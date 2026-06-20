@@ -140,7 +140,9 @@ export default function Settings() {
         <div className="card">
           <h2>販売方法</h2>
           <p className="fineprint" style={{ marginTop: 0 }}>
-            各サービスの手数料は変わります。最新の規約に合わせて率を編集してください。
+            メルカリ・ラクマ・ヤフーフリマ・minne・Creema などの初期手数料は2026年時点の目安です。
+            手数料は改定されるため、最新の規約に合わせて率を編集してください。その他のプラットフォームは
+            「＋ 販売方法を追加」から手動で登録できます。
           </p>
           {data.salesMethods.map((m) => (
             <div key={m.id} className="list-item" style={{ boxShadow: "none" }} onClick={() => setMethodDraft({ ...m })}>
@@ -177,14 +179,14 @@ export default function Settings() {
               <NumberField
                 label="手数料率"
                 suffix="%"
-                step="0.1"
+                step="0.01"
                 value={methodDraft.feePercent}
                 onChange={(feePercent) => setMethodDraft({ ...methodDraft, feePercent })}
               />
               <NumberField
                 label="委託率"
                 suffix="%"
-                step="0.1"
+                step="0.01"
                 value={methodDraft.consignmentPercent}
                 onChange={(consignmentPercent) => setMethodDraft({ ...methodDraft, consignmentPercent })}
               />
