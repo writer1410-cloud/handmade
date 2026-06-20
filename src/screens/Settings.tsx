@@ -31,13 +31,18 @@ export default function Settings() {
     if (res.ok) {
       updateSettings({ isPro: true });
       alert("Proにアップグレードしました。ありがとうございます！");
-    } else if (res.unsupported) {
-      // 開発・ブラウザプレビュー用：手動でProを有効化（本番はPlay Billingで自動）
-      if (confirm("この環境ではGoogle Play課金を実行できません。\nプレビュー用にProを有効化しますか？")) {
-        updateSettings({ isPro: true });
-      }
-    } else {
-      alert(res.message ?? "購入に失敗しました。");
+      return;
+    }
+    // 本番のPlay課金は未接続のため、購入が成立しなかった場合は
+    // お試し用にPro機能を有効化できるようにする（実際の課金は発生しない）。
+    if (
+      confirm(
+        "現在この環境では実際の購入（¥500課金）はまだ利用できません。\n" +
+          "お試し用にPro機能を有効化しますか？（料金は発生しません）",
+      )
+    ) {
+      updateSettings({ isPro: true });
+      alert("Pro機能を有効化しました（お試し）。");
     }
   };
 
