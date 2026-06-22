@@ -5,7 +5,7 @@
       "namespace": "android_app",
       "package_name": "com.handmadecost.app",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_UPLOAD_KEY_SHA256",
+        "A5:B6:BE:39:C8:7D:7E:07:2D:D9:36:89:50:BA:54:2B:1F:61:23:E2:C9:7B:26:42:FE:C7:45:76:03:80:2B:7D",
         "REPLACE_WITH_PLAY_APP_SIGNING_SHA256"
       ]
     }
